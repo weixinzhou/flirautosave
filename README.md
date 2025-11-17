@@ -100,7 +100,12 @@ Use Windows Snipping Tool to capture two button images:
    ImageTolerance := 30     ; If recognition fails, can increase appropriately (0-255)
    ```
 
-4. Save script (Ctrl+S)
+4. (Optional) Enable debug mode to see where images are found:
+   ```ahk
+   DebugMode := true        ; Shows tooltip when image is found (for troubleshooting)
+   ```
+
+5. Save script (Ctrl+S)
 
 ### Step 3: Run Batch Export
 
@@ -156,10 +161,15 @@ The script automatically repeats the following steps:
 
 ### 1. Image recognition failed, cannot find button?
 - **Check image files**: Ensure save.png and next.png files exist in script directory
+- **Enable debug mode**: Set `DebugMode := true` in script to see if images are found
+- **Increase tolerance**: Set `ImageTolerance := 100` (or even higher, up to 255) for more lenient matching
 - **Re-capture images**: Use clearer, more precise screenshots
-- **Adjust recognition tolerance**: Increase ImageTolerance value in script (e.g., change to 50 or 100)
-- **Check button state**: Ensure button is in normal state when capturing (not highlighted or pressed)
+  - Capture when button is in normal state (not highlighted or pressed)
+  - Capture at actual size (don't resize)
+  - Save as PNG format (not JPG)
 - **Check window visibility**: Ensure button is fully visible, not blocked by other windows
+- **Check display scaling**: If using Windows display scaling (125%, 150%), try capturing images at that scale
+- **Try larger capture**: Capture a slightly larger area including some background around the button
 
 ### 2. Save dialog keyboard shortcuts not working?
 - **Verify shortcuts**: Different Windows or FLIR software versions may have different shortcuts

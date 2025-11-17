@@ -9,7 +9,11 @@
 #SingleInstance Force
 SendMode Input
 SetWorkingDir %A_ScriptDir%
+
+; Set all coordinate modes to Screen (not relative to active window)
 CoordMode, Pixel, Screen
+CoordMode, Mouse, Screen
+CoordMode, ToolTip, Screen
 
 ; ========================================
 ; Configuration Parameters - Modify as needed
@@ -33,6 +37,9 @@ NextFrameImage := "next.png"       ; Next frame arrow button screenshot
 ; Image recognition tolerance (0-255, higher value = more tolerance)
 ImageTolerance := 30
 
+; Debug mode - set to true to show where images are found (for troubleshooting)
+DebugMode := false
+
 ; ========================================
 ; Time Delay Settings (milliseconds)
 ; ========================================
@@ -47,6 +54,11 @@ DelayLong := 1500        ; Long delay (file saving)
 ; Find image and click
 FindAndClick(ImageFile, ErrorMsg := "") {
     global ImageTolerance
+    global DebugMode
+
+    ; Ensure we're using Screen coordinates
+    CoordMode, Pixel, Screen
+    CoordMode, Mouse, Screen
 
     ; Set image recognition tolerance
     if (ImageTolerance > 0)
@@ -55,13 +67,22 @@ FindAndClick(ImageFile, ErrorMsg := "") {
         ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, %ImageFile%
 
     if (ErrorLevel = 0) {
-        ; Image found, click center position
-        Click, %FoundX%, %FoundY%
+        ; Image found, click center position using screen coordinates
+        if (DebugMode) {
+            ToolTip, Found %ImageFile% at X:%FoundX% Y:%FoundY%, %FoundX%, %FoundY%
+            Sleep, 1000
+            ToolTip  ; Clear tooltip
+        }
+
+        Click, %FoundX%, %FoundY%, 0  ; Move mouse without clicking first
+        Sleep, 50
+        Click, %FoundX%, %FoundY%     ; Then click
         return true
     } else {
         ; Image not found
-        if (ErrorMsg != "")
-            MsgBox, 48, Image Recognition Failed, %ErrorMsg%`n`nPlease ensure:`n1. %ImageFile% file exists`n2. Window interface is visible`n3. Image is clear and recognizable
+        if (ErrorMsg != "") {
+            MsgBox, 48, Image Recognition Failed, %ErrorMsg%`n`nPlease ensure:`n1. %ImageFile% file exists in script directory`n2. Button is visible on screen (not minimized/hidden)`n3. Image is clear and matches current display`n4. Try increasing ImageTolerance value`n`nSearching full screen: 0,0 to %A_ScreenWidth%,%A_ScreenHeight%
+        }
         return false
     }
 }
