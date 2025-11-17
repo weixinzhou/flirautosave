@@ -25,15 +25,15 @@ SavePath := "C:\FLIR_Export"  ; CSV文件保存目录
 ; 屏幕坐标设置 - 请使用CoordinateFinder.ahk获取准确坐标
 ; ========================================
 
-; 1. 底部帧序号输入框的坐标（可以看到当前帧号的位置）
-; 从截图看，在底部时间轴区域，大约在左下角
-FrameInputX := 1408      ; 帧号显示区域X坐标
-FrameInputY := 663       ; 帧号显示区域Y坐标
-
-; 2. Profile窗口中的Save按钮坐标
+; 1. Profile窗口中的Save按钮坐标
 ; 从截图看，在Profile: Line 1窗口的右上角
 SaveButtonX := 1238      ; Save按钮X坐标
 SaveButtonY := 233       ; Save按钮Y坐标
+
+; 2. 底部时间轴的"下一帧"右箭头按钮坐标
+; 在底部播放控制区域，用于切换到下一帧
+NextFrameButtonX := 730  ; 下一帧箭头按钮X坐标
+NextFrameButtonY := 663  ; 下一帧箭头按钮Y坐标
 
 ; 3. Save As对话框中的文件名输入框坐标
 FileNameInputX := 1020   ; 文件名输入框X坐标
@@ -66,11 +66,12 @@ MsgBox, 4, FLIR批量导出工具,
 结束帧: %EndFrame%
 保存路径: %SavePath%
 
-使用说明：
+重要提示：
 1. 确保FLIR ResearchIR软件已打开
 2. 确保Profile窗口已打开
-3. 点击"是"开始导出
-4. 按ESC键可随时中止程序
+3. 请先手动切换到起始帧（第%StartFrame%帧）
+4. 点击"是"开始导出
+5. 按ESC键可随时中止程序
 
 是否开始？
 )
@@ -112,25 +113,11 @@ Loop, %TotalFrames%
     ; 显示进度
     Progress, %CurrentProgress%, 正在处理第 %CurrentFrame% 帧 (%A_Index%/%TotalFrames%), FLIR批量导出进度
 
-    ; ======= 步骤1: 点击帧序号输入区域 =======
-    Click, %FrameInputX%, %FrameInputY%
-    Sleep, %DelayShort%
-
-    ; 全选当前内容并输入新帧号
-    Send, ^a
-    Sleep, 100
-    Send, %CurrentFrame%
-    Sleep, %DelayShort%
-
-    ; 按Enter确认
-    Send, {Enter}
-    Sleep, %DelayMedium%
-
-    ; ======= 步骤2: 点击Profile窗口的Save按钮 =======
+    ; ======= 步骤1: 点击Profile窗口的Save按钮 =======
     Click, %SaveButtonX%, %SaveButtonY%
     Sleep, %DelayMedium%
 
-    ; ======= 步骤3: 在Save As对话框中选择CSV格式 =======
+    ; ======= 步骤2: 在Save As对话框中选择CSV格式 =======
     ; 点击文件类型下拉框
     Click, %FileTypeDropdownX%, %FileTypeDropdownY%
     Sleep, %DelayShort%
@@ -142,7 +129,7 @@ Loop, %TotalFrames%
     Send, {Enter}
     Sleep, %DelayShort%
 
-    ; ======= 步骤4: 修改文件名为帧序号 =======
+    ; ======= 步骤3: 修改文件名为帧序号 =======
     Click, %FileNameInputX%, %FileNameInputY%
     Sleep, %DelayShort%
 
@@ -152,7 +139,7 @@ Loop, %TotalFrames%
     Send, Frame_%CurrentFrame%
     Sleep, %DelayShort%
 
-    ; ======= 步骤5: 点击Save按钮保存 =======
+    ; ======= 步骤4: 点击Save按钮保存 =======
     Click, %FinalSaveButtonX%, %FinalSaveButtonY%
     Sleep, %DelayLong%
 
@@ -161,6 +148,14 @@ Loop, %TotalFrames%
     IfWinExist, Confirm Save As
     {
         Send, {Enter}  ; 确认覆盖
+        Sleep, %DelayMedium%
+    }
+
+    ; ======= 步骤5: 点击右箭头切换到下一帧 =======
+    ; 只有在不是最后一帧时才切换到下一帧
+    if (A_Index < TotalFrames)
+    {
+        Click, %NextFrameButtonX%, %NextFrameButtonY%
         Sleep, %DelayMedium%
     }
 }
@@ -199,7 +194,13 @@ F1::
     2. 使用CoordinateFinder.ahk获取屏幕坐标
     3. 将获取的坐标填入脚本中
     4. 打开FLIR ResearchIR软件和Profile窗口
-    5. 运行此脚本
+    5. 手动切换到起始帧
+    6. 运行此脚本
+
+    工作原理：
+    - 脚本会保存当前帧数据
+    - 然后点击右箭头切换到下一帧
+    - 重复此过程直到完成所有帧
     )
     return
 }
