@@ -1,8 +1,8 @@
 ; ========================================
-; FLIR ResearchIR 批量帧数据导出工具 v2.0
+; FLIR ResearchIR Batch Frame Export Tool v2.0
 ; ========================================
-; 功能：自动化批量保存FLIR ResearchIR中的帧数据为CSV格式
-; 特点：使用图像识别技术，无需手动获取坐标
+; Function: Automate batch export of FLIR ResearchIR frame data to CSV
+; Feature: Uses image recognition technology, no manual coordinate configuration needed
 ; ========================================
 
 #NoEnv
@@ -12,96 +12,96 @@ SetWorkingDir %A_ScriptDir%
 CoordMode, Pixel, Screen
 
 ; ========================================
-; 配置参数 - 请根据实际情况修改
+; Configuration Parameters - Modify as needed
 ; ========================================
 
-; 帧范围设置
-StartFrame := 1          ; 起始帧号
-EndFrame := 100          ; 结束帧号
+; Frame range settings
+StartFrame := 1          ; Starting frame number
+EndFrame := 100          ; Ending frame number
 
-; 保存路径设置（请修改为你的实际保存路径）
-SavePath := "C:\FLIR_Export"  ; CSV文件保存目录
+; Save path settings (modify to your actual save path)
+SavePath := "C:\FLIR_Export"  ; CSV file save directory
 
 ; ========================================
-; 图像识别设置
+; Image Recognition Settings
 ; ========================================
 
-; 图像文件路径（必须与脚本在同一目录）
-SaveButtonImage := "save.png"      ; Save按钮截图
-NextFrameImage := "next.png"       ; 下一帧箭头按钮截图
+; Image file paths (must be in same directory as script)
+SaveButtonImage := "save.png"      ; Save button screenshot
+NextFrameImage := "next.png"       ; Next frame arrow button screenshot
 
-; 图像识别容差（0-255，数值越大容差越大）
+; Image recognition tolerance (0-255, higher value = more tolerance)
 ImageTolerance := 30
 
 ; ========================================
-; 时间延迟设置（毫秒）
+; Time Delay Settings (milliseconds)
 ; ========================================
-DelayShort := 300        ; 短延迟（界面响应）
-DelayMedium := 800       ; 中等延迟（对话框打开）
-DelayLong := 1500        ; 长延迟（文件保存）
+DelayShort := 300        ; Short delay (interface response)
+DelayMedium := 800       ; Medium delay (dialog opening)
+DelayLong := 1500        ; Long delay (file saving)
 
 ; ========================================
-; 函数定义
+; Function Definitions
 ; ========================================
 
-; 查找图像并点击
+; Find image and click
 FindAndClick(ImageFile, ErrorMsg := "") {
     global ImageTolerance
 
-    ; 设置图像识别容差
+    ; Set image recognition tolerance
     if (ImageTolerance > 0)
         ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, *%ImageTolerance% %ImageFile%
     else
         ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, %ImageFile%
 
     if (ErrorLevel = 0) {
-        ; 找到图像，点击中心位置
+        ; Image found, click center position
         Click, %FoundX%, %FoundY%
         return true
     } else {
-        ; 未找到图像
+        ; Image not found
         if (ErrorMsg != "")
-            MsgBox, 48, 图像识别失败, %ErrorMsg%`n`n请确保：`n1. %ImageFile% 文件存在`n2. 窗口界面可见`n3. 图像清晰可识别
+            MsgBox, 48, Image Recognition Failed, %ErrorMsg%`n`nPlease ensure:`n1. %ImageFile% file exists`n2. Window interface is visible`n3. Image is clear and recognizable
         return false
     }
 }
 
 ; ========================================
-; 主程序开始
+; Main Program Start
 ; ========================================
 
-; 检查图像文件是否存在
+; Check if image files exist
 IfNotExist, %SaveButtonImage%
 {
-    MsgBox, 16, 错误, 找不到文件: %SaveButtonImage%`n`n请确保save.png文件存在于脚本目录中！
+    MsgBox, 16, Error, File not found: %SaveButtonImage%`n`nPlease ensure save.png exists in the script directory!
     ExitApp
 }
 
 IfNotExist, %NextFrameImage%
 {
-    MsgBox, 16, 错误, 找不到文件: %NextFrameImage%`n`n请确保next.png文件存在于脚本目录中！
+    MsgBox, 16, Error, File not found: %NextFrameImage%`n`nPlease ensure next.png exists in the script directory!
     ExitApp
 }
 
-; 显示启动信息
-MsgBox, 4, FLIR批量导出工具 v2.0,
+; Display startup information
+MsgBox, 4, FLIR Batch Export Tool v2.0,
 (
-准备批量导出FLIR帧数据
-起始帧: %StartFrame%
-结束帧: %EndFrame%
-保存路径: %SavePath%
+Prepare to batch export FLIR frame data
+Start Frame: %StartFrame%
+End Frame: %EndFrame%
+Save Path: %SavePath%
 
-重要提示：
-1. 确保FLIR ResearchIR软件已打开
-2. 确保Profile窗口已打开
-3. 确保save.png和next.png文件已准备好
-4. 请先手动切换到起始帧（第%StartFrame%帧）
-5. 点击"是"开始导出
-6. 按ESC键可随时中止程序
+Important Notes:
+1. Ensure FLIR ResearchIR software is open
+2. Ensure Profile window is open
+3. Ensure save.png and next.png files are ready
+4. Manually navigate to the starting frame first (Frame %StartFrame%)
+5. Click "Yes" to start export
+6. Press ESC to abort at any time
 
-使用图像识别技术，无需配置坐标！
+Using image recognition technology - no coordinate configuration needed!
 
-是否开始？
+Start now?
 )
 
 IfMsgBox No
@@ -109,27 +109,27 @@ IfMsgBox No
     ExitApp
 }
 
-; 确保保存目录存在
+; Ensure save directory exists
 IfNotExist, %SavePath%
 {
-    MsgBox, 4, 创建目录, 保存目录不存在，是否创建？`n%SavePath%
+    MsgBox, 4, Create Directory, Save directory does not exist. Create it?`n%SavePath%
     IfMsgBox Yes
         FileCreateDir, %SavePath%
     else
         ExitApp
 }
 
-; 给用户5秒准备时间
+; Give user 5 seconds to prepare
 ProgressStart := A_TickCount
-Progress, b w300, 准备中... 5秒后开始, FLIR批量导出
+Progress, b w300, Preparing... Starting in 5 seconds, FLIR Batch Export
 Loop, 5
 {
-    Progress, % (6-A_Index)*20, % "准备中... " . (6-A_Index) . "秒后开始"
+    Progress, % (6-A_Index)*20, % "Preparing... Starting in " . (6-A_Index) . " seconds"
     Sleep, 1000
 }
 Progress, Off
 
-; 主循环 - 处理每一帧
+; Main loop - process each frame
 TotalFrames := EndFrame - StartFrame + 1
 CurrentProgress := 0
 
@@ -138,63 +138,63 @@ Loop, %TotalFrames%
     CurrentFrame := StartFrame + A_Index - 1
     CurrentProgress := Round((A_Index / TotalFrames) * 100)
 
-    ; 显示进度
-    Progress, %CurrentProgress%, 正在处理第 %CurrentFrame% 帧 (%A_Index%/%TotalFrames%), FLIR批量导出进度
+    ; Display progress
+    Progress, %CurrentProgress%, Processing Frame %CurrentFrame% (%A_Index%/%TotalFrames%), FLIR Batch Export Progress
 
-    ; ======= 步骤1: 使用图像识别查找并点击Save按钮 =======
-    if (!FindAndClick(SaveButtonImage, "无法找到Save按钮！")) {
-        MsgBox, 4, 继续?, 第 %CurrentFrame% 帧的Save按钮识别失败，是否继续？
+    ; ======= Step 1: Use image recognition to find and click Save button =======
+    if (!FindAndClick(SaveButtonImage, "Cannot find Save button!")) {
+        MsgBox, 4, Continue?, Save button recognition failed for Frame %CurrentFrame%. Continue?
         IfMsgBox No
             ExitApp
         continue
     }
     Sleep, %DelayMedium%
 
-    ; ======= 步骤2: 在Save As对话框中使用快捷键操作 =======
-    ; 使用Alt+T切换到文件类型下拉框（Save as type）
+    ; ======= Step 2: Use keyboard shortcuts in Save As dialog =======
+    ; Use Alt+T to switch to file type dropdown (Save as type)
     Send, !t
     Sleep, %DelayShort%
 
-    ; 选择CSV选项（向下键选择）
+    ; Select CSV option (use down arrow key)
     Send, {Down}
     Sleep, 200
     Send, {Enter}
     Sleep, %DelayShort%
 
-    ; ======= 步骤3: 使用快捷键输入文件名 =======
-    ; Alt+N 通常对应文件名输入框（File name）
+    ; ======= Step 3: Use keyboard shortcut to enter filename =======
+    ; Alt+N usually corresponds to filename input box (File name)
     Send, !n
     Sleep, %DelayShort%
 
-    ; 清除当前文件名并输入新的
+    ; Clear current filename and enter new one
     Send, ^a
     Sleep, 100
     Send, Frame_%CurrentFrame%
     Sleep, %DelayShort%
 
-    ; ======= 步骤4: 使用Alt+S或Enter保存 =======
-    ; 尝试Alt+S（Save按钮的快捷键）
+    ; ======= Step 4: Use Alt+S or Enter to save =======
+    ; Try Alt+S (Save button shortcut)
     Send, !s
     Sleep, %DelayLong%
 
-    ; 检查是否有覆盖提示（如果文件已存在）
+    ; Check for overwrite prompt (if file already exists)
     IfWinExist, Confirm Save As
     {
-        Send, {Enter}  ; 确认覆盖
+        Send, {Enter}  ; Confirm overwrite
         Sleep, %DelayMedium%
     }
-    IfWinExist, ahk_class #32770  ; 标准Windows对话框
+    IfWinExist, ahk_class #32770  ; Standard Windows dialog
     {
-        Send, {Enter}  ; 确认
+        Send, {Enter}  ; Confirm
         Sleep, %DelayMedium%
     }
 
-    ; ======= 步骤5: 使用图像识别点击下一帧箭头 =======
-    ; 只有在不是最后一帧时才切换到下一帧
+    ; ======= Step 5: Use image recognition to click next frame arrow =======
+    ; Only switch to next frame if not the last frame
     if (A_Index < TotalFrames)
     {
-        if (!FindAndClick(NextFrameImage, "无法找到下一帧按钮！")) {
-            MsgBox, 4, 继续?, 第 %CurrentFrame% 帧后的下一帧按钮识别失败，是否继续？
+        if (!FindAndClick(NextFrameImage, "Cannot find next frame button!")) {
+            MsgBox, 4, Continue?, Next frame button recognition failed after Frame %CurrentFrame%. Continue?
             IfMsgBox No
                 ExitApp
         }
@@ -202,53 +202,53 @@ Loop, %TotalFrames%
     }
 }
 
-; 完成
+; Complete
 Progress, Off
-MsgBox, 64, 完成, 批量导出完成！`n`n已导出 %TotalFrames% 个帧`n保存位置: %SavePath%
+MsgBox, 64, Complete, Batch export complete!`n`nExported %TotalFrames% frames`nSave location: %SavePath%
 
 ExitApp
 
 ; ========================================
-; 快捷键定义
+; Hotkey Definitions
 ; ========================================
 
-; 按ESC键中止程序
+; Press ESC to abort program
 Esc::
 {
-    MsgBox, 4, 确认, 确定要中止批量导出吗？
+    MsgBox, 4, Confirm, Are you sure you want to abort the batch export?
     IfMsgBox Yes
         ExitApp
     return
 }
 
-; 按F1显示帮助
+; Press F1 to display help
 F1::
 {
-    MsgBox, 64, 帮助信息,
+    MsgBox, 64, Help Information,
     (
-    FLIR批量导出工具 v2.0 - 快捷键说明
+    FLIR Batch Export Tool v2.0 - Hotkey Guide
 
-    ESC - 中止程序
-    F1  - 显示此帮助
+    ESC - Abort program
+    F1  - Display this help
 
-    v2.0 新特性：
-    - 使用图像识别技术，无需手动配置坐标
-    - 使用快捷键操作保存对话框，更稳定可靠
-    - 需要准备save.png和next.png图像文件
+    v2.0 New Features:
+    - Uses image recognition technology, no manual coordinate configuration
+    - Uses keyboard shortcuts for save dialog, more stable and reliable
+    - Requires save.png and next.png image files
 
-    使用步骤：
-    1. 截取Save按钮保存为save.png
-    2. 截取下一帧箭头按钮保存为next.png
-    3. 修改脚本配置参数（起始帧、结束帧、保存路径）
-    4. 打开FLIR ResearchIR软件和Profile窗口
-    5. 手动切换到起始帧
-    6. 运行此脚本
+    Usage Steps:
+    1. Capture Save button and save as save.png
+    2. Capture next frame arrow button and save as next.png
+    3. Modify script configuration (start frame, end frame, save path)
+    4. Open FLIR ResearchIR software and Profile window
+    5. Manually navigate to starting frame
+    6. Run this script
 
-    工作原理：
-    - 使用图像识别查找并点击Save按钮
-    - 使用快捷键操作保存对话框（Alt+T选择类型，Alt+N输入文件名，Alt+S保存）
-    - 使用图像识别查找并点击下一帧箭头
-    - 重复此过程直到完成所有帧
+    How It Works:
+    - Uses image recognition to find and click Save button
+    - Uses keyboard shortcuts for save dialog (Alt+T for type, Alt+N for filename, Alt+S to save)
+    - Uses image recognition to find and click next frame arrow
+    - Repeats this process until all frames are complete
     )
     return
 }

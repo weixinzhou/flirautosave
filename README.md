@@ -1,242 +1,242 @@
-# FLIR ResearchIR 批量帧数据导出工具 v2.0
+# FLIR ResearchIR Batch Frame Data Export Tool v2.0
 
-## 简介
+## Introduction
 
-这是一个用于自动化批量导出FLIR ResearchIR 4软件中帧数据的AutoHotkey脚本工具。由于FLIR ResearchIR软件本身不提供批量导出功能，需要手动一帧一帧地保存数据，这个工具可以自动化这个重复的过程。
+This is an AutoHotkey script tool for automating batch export of frame data from FLIR ResearchIR 4 software. Since FLIR ResearchIR software does not provide a batch export feature and requires manually saving data frame by frame, this tool automates this repetitive process.
 
-## v2.0 新特性 ⭐
+## v2.0 New Features ⭐
 
-- **图像识别技术**：无需手动配置坐标，使用图像识别自动查找按钮
-- **快捷键操作**：保存对话框使用快捷键操作，更稳定可靠
-- **更强适应性**：适应不同分辨率和窗口位置
-- **简化配置**：只需截取两张按钮图片即可
+- **Image Recognition Technology**: No manual coordinate configuration needed, uses image recognition to automatically find buttons
+- **Keyboard Shortcuts**: Save dialog uses keyboard shortcuts for more stable and reliable operation
+- **Better Adaptability**: Adapts to different resolutions and window positions
+- **Simplified Configuration**: Only need to capture two button images
 
-## 功能特点
+## Features
 
-- 自动化批量导出指定范围的帧数据
-- 支持导出为CSV格式（X和Y值）
-- 可自定义帧范围（起始帧和结束帧）
-- 可自定义保存路径
-- **使用图像识别，无需配置坐标**
-- **使用快捷键操作保存对话框**
-- 实时进度显示
-- 支持中途取消（ESC键）
+- Automate batch export of specified frame range data
+- Support export to CSV format (X and Y values)
+- Customizable frame range (start frame and end frame)
+- Customizable save path
+- **Uses image recognition, no coordinate configuration needed**
+- **Uses keyboard shortcuts for save dialog**
+- Real-time progress display
+- Support cancellation mid-process (ESC key)
 
-## 文件说明
+## File Description
 
-- `FLIR_AutoSave.ahk` - 主脚本，执行批量导出任务（v2.0使用图像识别）
-- `ImageCapture.ahk` - 图像截取辅助工具（新增）
-- `CoordinateFinder.ahk` - 坐标获取工具（v1.x版本使用，v2.0不再需要）
-- `save.png` - Save按钮截图（需要用户自行截取）
-- `next.png` - 下一帧箭头按钮截图（需要用户自行截取）
-- `1.jpg`, `2.jpg`, `3.jpg` - 操作流程截图参考
-- `README.md` - 本说明文档
+- `FLIR_AutoSave.ahk` - Main script, executes batch export task (v2.0 uses image recognition)
+- `ImageCapture.ahk` - Image capture helper tool (newly added)
+- `CoordinateFinder.ahk` - Coordinate acquisition tool (used by v1.x, not needed for v2.0)
+- `save.png` - Save button screenshot (user needs to capture)
+- `next.png` - Next frame arrow button screenshot (user needs to capture)
+- `1.jpg`, `2.jpg`, `3.jpg` - Operation process screenshot reference
+- `README.md` - This documentation
 
-## 系统要求
+## System Requirements
 
-- Windows操作系统
-- FLIR ResearchIR 4软件
-- AutoHotkey v1.1或更高版本（[下载地址](https://www.autohotkey.com/)）
+- Windows Operating System
+- FLIR ResearchIR 4 software
+- AutoHotkey v1.1 or higher ([Download](https://www.autohotkey.com/))
 
-## 安装步骤
+## Installation Steps
 
-1. 下载并安装AutoHotkey：https://www.autohotkey.com/
-2. 下载本项目的所有文件到同一文件夹
+1. Download and install AutoHotkey: https://www.autohotkey.com/
+2. Download all project files to the same folder
 
-## 使用步骤
+## Usage Steps
 
-### 第一步：截取按钮图像
+### Step 1: Capture Button Images
 
-使用Windows截图工具截取两个按钮的图像：
+Use Windows Snipping Tool to capture two button images:
 
-**方法一：使用Windows截图工具（推荐）**
+**Method 1: Use Windows Snipping Tool (Recommended)**
 
-1. 打开FLIR ResearchIR软件和Profile窗口
-2. 按 `Win+Shift+S` 打开Windows截图工具（Windows 10/11）
-3. 选择矩形截图模式
+1. Open FLIR ResearchIR software and Profile window
+2. Press `Win+Shift+S` to open Windows Snipping Tool (Windows 10/11)
+3. Select rectangular snip mode
 
-4. **截取Save按钮**：
-   - 精确框选Profile窗口右上角的"Save"按钮
-   - 打开画图（按Win+R，输入mspaint，回车）
-   - 按Ctrl+V粘贴
-   - 文件 → 另存为 → PNG图片
-   - 文件名输入：`save.png`
-   - 保存到脚本所在文件夹
+4. **Capture Save Button**:
+   - Precisely select the "Save" button in upper right corner of Profile window
+   - Open Paint (press Win+R, type mspaint, press Enter)
+   - Press Ctrl+V to paste
+   - File → Save As → PNG Picture
+   - Filename: `save.png`
+   - Save to script folder
 
-5. **截取下一帧箭头**：
-   - 按 `Win+Shift+S` 重新打开截图工具
-   - 框选底部时间轴的"下一帧"右箭头按钮
-   - 打开画图，粘贴
-   - 保存为 `next.png`（保存到脚本所在文件夹）
+5. **Capture Next Frame Arrow**:
+   - Press `Win+Shift+S` to reopen Snipping Tool
+   - Select the "next frame" right arrow button in bottom timeline
+   - Open Paint, paste
+   - Save as `next.png` (save to script folder)
 
-**方法二：使用ImageCapture工具**
+**Method 2: Use ImageCapture Tool**
 
-1. 双击运行 `ImageCapture.ahk`
-2. 按照界面提示操作
-3. 使用工具提供的说明截取图像
+1. Double-click to run `ImageCapture.ahk`
+2. Follow the interface prompts
+3. Use the tool's instructions to capture images
 
-**截图技巧**：
-- 截图时确保按钮处于正常状态（非高亮/按下状态）
-- 尽量精确框选，只包含按钮本身
-- 图像大小建议在30-80像素之间
-- 确保图像清晰
+**Capture Tips**:
+- Ensure button is in normal state when capturing (not highlighted/pressed)
+- Try to select precisely, only include button itself
+- Recommended image size: 30-80 pixels
+- Ensure image is clear
 
-### 第二步：配置脚本参数
+### Step 2: Configure Script Parameters
 
-1. 右键点击 `FLIR_AutoSave.ahk`，选择"Edit Script"（编辑脚本）
-2. 找到"配置参数"部分，修改以下设置：
+1. Right-click `FLIR_AutoSave.ahk`, select "Edit Script"
+2. Find "Configuration Parameters" section, modify the following settings:
 
    ```ahk
-   ; 帧范围设置
-   StartFrame := 1          ; 起始帧号（改为你需要的起始帧）
-   EndFrame := 100          ; 结束帧号（改为你需要的结束帧）
+   ; Frame range settings
+   StartFrame := 1          ; Starting frame number (change to your start frame)
+   EndFrame := 100          ; Ending frame number (change to your end frame)
 
-   ; 保存路径设置
-   SavePath := "C:\FLIR_Export"  ; CSV文件保存目录（改为你的保存路径）
+   ; Save path settings
+   SavePath := "C:\FLIR_Export"  ; CSV file save directory (change to your save path)
    ```
 
-3. （可选）调整图像识别容差：
+3. (Optional) Adjust image recognition tolerance:
    ```ahk
-   ImageTolerance := 30     ; 如果识别失败，可以适当增大（0-255）
+   ImageTolerance := 30     ; If recognition fails, can increase appropriately (0-255)
    ```
 
-4. 保存脚本（Ctrl+S）
+4. Save script (Ctrl+S)
 
-### 第三步：运行批量导出
+### Step 3: Run Batch Export
 
-1. 确保FLIR ResearchIR软件已打开
-2. 确保Profile窗口已打开
-3. 确认 `save.png` 和 `next.png` 已准备好
-4. **重要：手动切换到起始帧**（例如，如果设置StartFrame为1，请先切换到第1帧）
-5. 双击运行 `FLIR_AutoSave.ahk`
-6. 在弹出的确认对话框中点击"是"
-7. 等待5秒准备时间
-8. 脚本会自动开始批量导出
-9. 可以随时按 `ESC` 键中止
+1. Ensure FLIR ResearchIR software is open
+2. Ensure Profile window is open
+3. Confirm `save.png` and `next.png` are ready
+4. **Important: Manually navigate to the starting frame** (e.g., if StartFrame is set to 1, navigate to Frame 1 first)
+5. Double-click to run `FLIR_AutoSave.ahk`
+6. Click "Yes" in the confirmation dialog
+7. Wait 5 seconds for preparation time
+8. Script will automatically start batch export
+9. Can press `ESC` key to abort at any time
 
-## 操作原理
+## How It Works
 
-脚本会自动重复以下操作步骤：
+The script automatically repeats the following steps:
 
-1. **图像识别查找Save按钮** - 在全屏范围内查找save.png图像并点击
-2. **使用快捷键操作保存对话框**：
-   - `Alt+T` - 切换到文件类型下拉框
-   - `↓` + `Enter` - 选择CSV格式
-   - `Alt+N` - 切换到文件名输入框
-   - 输入 "Frame_[帧号]"
-   - `Alt+S` - 点击保存按钮
-3. **等待文件保存完成**
-4. **图像识别查找下一帧箭头** - 查找next.png图像并点击
-5. 重复以上步骤直到所有帧都保存完成
+1. **Image recognition to find Save button** - Searches entire screen for save.png image and clicks it
+2. **Uses keyboard shortcuts for save dialog**:
+   - `Alt+T` - Switch to file type dropdown
+   - `↓` + `Enter` - Select CSV format
+   - `Alt+N` - Switch to filename input box
+   - Enter "Frame_[frame number]"
+   - `Alt+S` - Click save button
+3. **Wait for file save to complete**
+4. **Image recognition to find next frame arrow** - Find next.png image and click it
+5. Repeat above steps until all frames are complete
 
-**v2.0 优势**：
-- 图像识别：自动适应不同窗口位置和分辨率
-- 快捷键操作：比鼠标点击坐标更稳定可靠
-- 无需配置：只需截取两张图片即可使用
+**v2.0 Advantages**:
+- Image recognition: Automatically adapts to different window positions and resolutions
+- Keyboard shortcuts: More stable and reliable than clicking coordinates
+- No configuration needed: Only need to capture two images
 
-## 快捷键说明
+## Hotkey Guide
 
-### FLIR_AutoSave.ahk（主脚本）
-- `ESC` - 中止批量导出
-- `F1` - 显示帮助信息
+### FLIR_AutoSave.ahk (Main Script)
+- `ESC` - Abort batch export
+- `F1` - Display help information
 
-### ImageCapture.ahk（图像截取工具）
-- `Ctrl+1` - 查看save.png截取说明
-- `Ctrl+2` - 查看next.png截取说明
-- `ESC` - 退出程序
+### ImageCapture.ahk (Image Capture Tool)
+- `Ctrl+1` - View save.png capture instructions
+- `Ctrl+2` - View next.png capture instructions
+- `ESC` - Exit program
 
-### CoordinateFinder.ahk（v1.x旧版工具，v2.0不再需要）
-- `Ctrl+Shift+C` - 保存当前鼠标位置坐标
-- `F1` - 查看所有已保存坐标并复制代码
-- `F2` - 清除所有已保存坐标
-- `F3` - 显示帮助信息
-- `ESC` - 退出程序
+### CoordinateFinder.ahk (v1.x legacy tool, not needed for v2.0)
+- `Ctrl+Shift+C` - Save current mouse position coordinates
+- `F1` - View all saved coordinates and copy code
+- `F2` - Clear all saved coordinates
+- `F3` - Display help information
+- `ESC` - Exit program
 
-## 常见问题
+## FAQ
 
-### 1. 图像识别失败，找不到按钮？
-- **检查图像文件**：确保save.png和next.png文件存在于脚本目录
-- **重新截取图像**：使用更清晰、更精确的截图
-- **调整识别容差**：在脚本中增大ImageTolerance值（如改为50或100）
-- **检查按钮状态**：截图时确保按钮处于正常状态（未被高亮或按下）
-- **检查窗口可见性**：确保按钮完全可见，未被其他窗口遮挡
+### 1. Image recognition failed, cannot find button?
+- **Check image files**: Ensure save.png and next.png files exist in script directory
+- **Re-capture images**: Use clearer, more precise screenshots
+- **Adjust recognition tolerance**: Increase ImageTolerance value in script (e.g., change to 50 or 100)
+- **Check button state**: Ensure button is in normal state when capturing (not highlighted or pressed)
+- **Check window visibility**: Ensure button is fully visible, not blocked by other windows
 
-### 2. 保存对话框快捷键不起作用？
-- **验证快捷键**：不同版本的Windows或FLIR软件快捷键可能不同
-- **手动测试**：打开保存对话框，手动按Alt+T、Alt+N、Alt+S测试是否有效
-- **修改脚本**：如果快捷键不同，可以在脚本中修改对应的Send命令
-- **使用Tab键**：可以尝试用Tab键导航代替Alt快捷键
+### 2. Save dialog keyboard shortcuts not working?
+- **Verify shortcuts**: Different Windows or FLIR software versions may have different shortcuts
+- **Manual test**: Open save dialog, manually test if Alt+T, Alt+N, Alt+S work
+- **Modify script**: If shortcuts are different, can modify corresponding Send commands in script
+- **Use Tab key**: Can try using Tab key navigation instead of Alt shortcuts
 
-### 3. 脚本运行后没有反应？
-- 检查AutoHotkey是否正确安装
-- 确保FLIR软件和Profile窗口已打开
-- 检查save.png和next.png文件是否存在
-- 查看是否有错误提示对话框
+### 3. Script not responding after running?
+- Check if AutoHotkey is installed correctly
+- Ensure FLIR software and Profile window are open
+- Check if save.png and next.png files exist
+- Check if there are error prompt dialogs
 
-### 4. 文件没有保存到指定位置？
-- 检查SavePath路径是否正确
-- 确保该路径存在且有写入权限
-- 检查路径中是否使用了正确的反斜杠（Windows使用反斜杠\）
+### 4. Files not saved to specified location?
+- Check if SavePath is correct
+- Ensure path exists and has write permissions
+- Check if correct backslash is used in path (Windows uses backslash \)
 
-### 5. 保存速度太快或太慢？
-- 可以调整脚本中的延迟参数：
+### 5. Save speed too fast or too slow?
+- Can adjust delay parameters in script:
   ```ahk
-  DelayShort := 300        ; 短延迟（界面响应）
-  DelayMedium := 800       ; 中等延迟（对话框打开）
-  DelayLong := 1500        ; 长延迟（文件保存）
+  DelayShort := 300        ; Short delay (interface response)
+  DelayMedium := 800       ; Medium delay (dialog opening)
+  DelayLong := 1500        ; Long delay (file saving)
   ```
 
-### 6. 某些帧保存失败？
-- 增加延迟时间，给软件更多响应时间
-- 检查磁盘空间是否充足
-- 检查帧号是否在有效范围内
-- 查看是否有错误提示，脚本会询问是否继续
+### 6. Some frames failed to save?
+- Increase delay time to give software more response time
+- Check if disk space is sufficient
+- Check if frame number is within valid range
+- Check if there are error prompts, script will ask whether to continue
 
-### 7. 如何获取更好的截图？
-- 使用Windows自带的截图工具（Win+Shift+S）
-- 截图时只包含按钮本身，不要包含过多背景
-- 确保截图清晰，不要模糊
-- 图像大小建议30-80像素
-- 截图时按钮应处于正常状态（未激活）
+### 7. How to get better screenshots?
+- Use Windows built-in Snipping Tool (Win+Shift+S)
+- Only include button itself when capturing, don't include too much background
+- Ensure screenshot is clear, not blurry
+- Recommended image size: 30-80 pixels
+- Button should be in normal state when capturing (not activated)
 
-## 注意事项
+## Important Notes
 
-1. **必须准备图像文件**：运行前确保save.png和next.png存在于脚本目录
-2. **运行前必须手动切换到起始帧**：脚本会从当前帧开始，通过点击右箭头逐帧导出
-3. **运行期间请勿移动鼠标或操作电脑**：否则可能干扰脚本执行
-4. **首次使用前务必先测试**：建议先设置小范围（如1-5帧）测试是否正常
-5. **图像质量很重要**：截图要清晰，只包含按钮本身
-6. **备份重要数据**：虽然脚本不会修改原始数据，但建议做好备份
-7. **确保帧范围正确**：如果当前帧号加上要导出的帧数超过视频总帧数，可能会导致错误
-8. **窗口不要最小化**：确保FLIR窗口和按钮可见
-9. **测试快捷键**：首次使用前手动测试保存对话框的快捷键是否有效
+1. **Must prepare image files**: Ensure save.png and next.png exist in script directory before running
+2. **Must manually navigate to starting frame before running**: Script starts from current frame, exports frame by frame by clicking right arrow
+3. **Do not move mouse or operate computer during execution**: Otherwise may interfere with script execution
+4. **Must test before first use**: Recommend setting small range (e.g., 1-5 frames) to test if normal
+5. **Image quality is important**: Screenshots must be clear, only include button itself
+6. **Backup important data**: Although script does not modify original data, recommend backing up
+7. **Ensure frame range is correct**: If current frame number plus frames to export exceeds total video frames, may cause errors
+8. **Do not minimize windows**: Ensure FLIR window and buttons are visible
+9. **Test shortcuts**: Manually test if save dialog shortcuts work before first use
 
-## 技术支持
+## Technical Support
 
-如有问题或建议，请在GitHub上提交Issue。
+For issues or suggestions, please submit an Issue on GitHub.
 
-## 许可证
+## License
 
-本项目采用MIT许可证，可自由使用和修改。
+This project is licensed under the MIT License and can be freely used and modified.
 
-## 更新日志
+## Changelog
 
 ### v2.0 (2025-11-17)
-- **重大更新**：使用图像识别技术，无需手动配置坐标
-- **新增**：使用快捷键操作保存对话框，更稳定可靠
-- **新增**：ImageCapture.ahk图像截取辅助工具
-- **改进**：自动适应不同分辨率和窗口位置
-- **简化**：只需截取两张按钮图片即可使用
-- **优化**：添加图像文件检查和详细错误提示
-- **优化**：改进的错误处理，识别失败时询问是否继续
+- **Major Update**: Uses image recognition technology, no manual coordinate configuration needed
+- **Added**: Uses keyboard shortcuts for save dialog, more stable and reliable
+- **Added**: ImageCapture.ahk image capture helper tool
+- **Improved**: Automatically adapts to different resolutions and window positions
+- **Simplified**: Only need to capture two button images
+- **Optimized**: Added image file checking and detailed error prompts
+- **Optimized**: Improved error handling, asks whether to continue if recognition fails
 
 ### v1.1 (2025-11-17)
-- 改进：使用右箭头按钮切换帧，替代输入帧号的方式
-- 简化了操作流程，提高了稳定性
-- 用户需要在运行前手动切换到起始帧
-- 更新了使用说明和操作原理
+- Improved: Uses right arrow button to switch frames, replacing frame number input method
+- Simplified operation process, improved stability
+- User needs to manually navigate to starting frame before running
+- Updated usage instructions and operating principles
 
 ### v1.0 (2025-11-17)
-- 初始版本发布
-- 支持批量导出帧数据为CSV格式
-- 包含坐标获取辅助工具（CoordinateFinder.ahk）
+- Initial version release
+- Support batch export of frame data to CSV format
+- Includes coordinate acquisition helper tool (CoordinateFinder.ahk)

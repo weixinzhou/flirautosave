@@ -1,8 +1,8 @@
 ; ========================================
-; 图像截取工具 - FLIR AutoSave辅助工具
+; Image Capture Tool - FLIR AutoSave Helper
 ; ========================================
-; 功能：帮助用户截取Save按钮和下一帧箭头按钮的图像
-; 用于FLIR_AutoSave.ahk的图像识别功能
+; Function: Help users capture Save button and next frame arrow button images
+; For use with FLIR_AutoSave.ahk image recognition feature
 ; ========================================
 
 #NoEnv
@@ -10,128 +10,128 @@
 SetWorkingDir %A_ScriptDir%
 
 ; ========================================
-; 使用说明
+; Usage Instructions
 ; ========================================
 
-MsgBox, 64, 图像截取工具 - 使用说明,
+MsgBox, 64, Image Capture Tool - Instructions,
 (
-本工具将帮助您截取FLIR软件界面的按钮图像
+This tool will help you capture button images from the FLIR software interface
 
-您需要截取两个图像：
-1. save.png - Profile窗口的Save按钮
-2. next.png - 底部时间轴的下一帧箭头按钮
+You need to capture two images:
+1. save.png - Save button in Profile window
+2. next.png - Next frame arrow button in bottom timeline
 
-截取步骤：
+Capture Steps:
 
-方法一：使用Windows截图工具（推荐）
+Method 1: Use Windows Snipping Tool (Recommended)
 ----------------------------------------
-1. 打开FLIR ResearchIR软件和Profile窗口
-2. 按 Win+Shift+S 打开Windows截图工具
-3. 选择"矩形截图"
-4. 精确截取Save按钮区域
-5. 截图会自动复制到剪贴板
-6. 打开画图（mspaint.exe）或其他图片编辑器
-7. 粘贴并保存为 save.png
-8. 重复步骤2-7截取下一帧箭头，保存为 next.png
+1. Open FLIR ResearchIR software and Profile window
+2. Press Win+Shift+S to open Windows Snipping Tool
+3. Select "Rectangular Snip"
+4. Precisely capture the Save button area
+5. Screenshot will be automatically copied to clipboard
+6. Open Paint (mspaint.exe) or other image editor
+7. Paste and save as save.png
+8. Repeat steps 2-7 to capture next frame arrow, save as next.png
 
-方法二：使用本工具的快捷键截图
+Method 2: Use This Tool's Hotkeys
 ----------------------------------------
-按 Ctrl+1: 截取save.png（截取Save按钮）
-按 Ctrl+2: 截取next.png（截取下一帧箭头）
+Press Ctrl+1: Capture save.png (Save button)
+Press Ctrl+2: Capture next.png (Next frame arrow)
 
-使用本工具快捷键时：
-1. 按下快捷键后，屏幕会暂停3秒
-2. 快速用鼠标框选要截取的区域
-3. 松开鼠标后自动保存图像
+When using this tool's hotkeys:
+1. After pressing hotkey, screen will pause for 3 seconds
+2. Quickly select the area to capture with mouse
+3. Image will be saved automatically when you release mouse
 
-注意事项：
+Important Notes:
 ----------------------------------------
-- 截取的图像应该清晰可见
-- 尽量只包含按钮本身，不要包含太多背景
-- 建议图像大小在20x20到100x100像素之间
-- 确保保存在脚本同一目录下
+- Captured images should be clear and visible
+- Try to include only the button itself, not too much background
+- Recommended image size: 20x20 to 100x100 pixels
+- Ensure saved in same directory as script
 
-点击"确定"开始
+Click "OK" to begin
 )
 
-; 创建主界面
+; Create main GUI
 Gui, +AlwaysOnTop
 Gui, Font, s10 Bold
-Gui, Add, Text, x20 y20 w460, 图像截取工具 - FLIR AutoSave
+Gui, Add, Text, x20 y20 w460, Image Capture Tool - FLIR AutoSave
 Gui, Font, s9 Normal
-Gui, Add, Text, x20 y50 w460, 请使用以下快捷键截取图像，或使用Windows自带截图工具（Win+Shift+S）
+Gui, Add, Text, x20 y50 w460, Use the following hotkeys to capture images, or use Windows built-in Snipping Tool (Win+Shift+S)
 
-Gui, Add, GroupBox, x20 y80 w460 h120, 快捷键截图（框选区域）
-Gui, Add, Text, x40 y105, Ctrl+1 - 截取Save按钮（保存为save.png）
-Gui, Add, Text, x40 y130, Ctrl+2 - 截取下一帧箭头（保存为next.png）
-Gui, Add, Text, x40 y155 cRed, 按下快捷键后，用鼠标框选要截取的区域
-Gui, Add, Text, x40 y175 cBlue, 提示：也可以用Win+Shift+S使用Windows截图工具
+Gui, Add, GroupBox, x20 y80 w460 h120, Hotkey Capture (Select Area)
+Gui, Add, Text, x40 y105, Ctrl+1 - Capture Save button (save as save.png)
+Gui, Add, Text, x40 y130, Ctrl+2 - Capture next frame arrow (save as next.png)
+Gui, Add, Text, x40 y155 cRed, After pressing hotkey, select area with mouse
+Gui, Add, Text, x40 y175 cBlue, Tip: You can also use Win+Shift+S for Windows Snipping Tool
 
-Gui, Add, GroupBox, x20 y210 w460 h100, 已截取的图像
-Gui, Add, Text, x40 y235 vSaveStatus, save.png: 未截取
-Gui, Add, Text, x40 y260 vNextStatus, next.png: 未截取
+Gui, Add, GroupBox, x20 y210 w460 h100, Captured Images
+Gui, Add, Text, x40 y235 vSaveStatus, save.png: Not captured
+Gui, Add, Text, x40 y260 vNextStatus, next.png: Not captured
 
-Gui, Add, Button, x20 y320 w220 h35 gCheckImages, 检查图像文件
-Gui, Add, Button, x250 y320 w230 h35 gShowHelp, 查看详细说明
+Gui, Add, Button, x20 y320 w220 h35 gCheckImages, Check Image Files
+Gui, Add, Button, x250 y320 w230 h35 gShowHelp, View Detailed Instructions
 
-Gui, Add, Text, x20 y365 w460 h2 +0x10  ; 分隔线
+Gui, Add, Text, x20 y365 w460 h2 +0x10  ; Separator line
 
-Gui, Add, Button, x380 y375 w100 h30 gGuiClose, 关闭
+Gui, Add, Button, x380 y375 w100 h30 gGuiClose, Close
 
-Gui, Show, w500 h420, FLIR图像截取工具
+Gui, Show, w500 h420, FLIR Image Capture Tool
 
-; 启动时检查图像文件
+; Check image files on startup
 Gosub, CheckImages
 
 return
 
 ; ========================================
-; 截图功能（需要第三方工具支持）
+; Screenshot Functionality
 ; ========================================
 
-; 由于AutoHotkey不直接支持区域截图，这里提供简化版本
-; 实际建议使用Windows自带的截图工具
+; AutoHotkey doesn't directly support region capture
+; Recommend using Windows built-in Snipping Tool
 
-^1::  ; Ctrl+1 - 截取save.png
+^1::  ; Ctrl+1 - Capture save.png
 {
-    MsgBox, 64, 截取Save按钮,
+    MsgBox, 64, Capture Save Button,
     (
-    准备截取Save按钮图像
+    Prepare to capture Save button image
 
-    建议使用Windows截图工具：
-    1. 按 Win+Shift+S 打开截图工具
-    2. 框选Save按钮
-    3. 打开画图（mspaint）
-    4. 按 Ctrl+V 粘贴
-    5. 保存为 save.png（保存在脚本目录）
+    Recommended: Use Windows Snipping Tool:
+    1. Press Win+Shift+S to open Snipping Tool
+    2. Select the Save button area
+    3. Open Paint (mspaint)
+    4. Press Ctrl+V to paste
+    5. Save as save.png (in script directory)
 
-    或者使用任何截图软件截取Save按钮区域
-    并保存为 save.png
+    Or use any screenshot software to capture the Save button area
+    and save as save.png
     )
     return
 }
 
-^2::  ; Ctrl+2 - 截取next.png
+^2::  ; Ctrl+2 - Capture next.png
 {
-    MsgBox, 64, 截取下一帧箭头,
+    MsgBox, 64, Capture Next Frame Arrow,
     (
-    准备截取下一帧箭头图像
+    Prepare to capture next frame arrow image
 
-    建议使用Windows截图工具：
-    1. 按 Win+Shift+S 打开截图工具
-    2. 框选下一帧箭头按钮
-    3. 打开画图（mspaint）
-    4. 按 Ctrl+V 粘贴
-    5. 保存为 next.png（保存在脚本目录）
+    Recommended: Use Windows Snipping Tool:
+    1. Press Win+Shift+S to open Snipping Tool
+    2. Select the next frame arrow button area
+    3. Open Paint (mspaint)
+    4. Press Ctrl+V to paste
+    5. Save as next.png (in script directory)
 
-    或者使用任何截图软件截取箭头按钮区域
-    并保存为 next.png
+    Or use any screenshot software to capture the arrow button area
+    and save as next.png
     )
     return
 }
 
 ; ========================================
-; 检查图像文件
+; Check Image Files
 ; ========================================
 
 CheckImages:
@@ -140,86 +140,86 @@ CheckImages:
     nextExists := FileExist("next.png")
 
     if (saveExists)
-        GuiControl,, SaveStatus, save.png: ✓ 已存在
+        GuiControl,, SaveStatus, save.png: ✓ Exists
     else
-        GuiControl,, SaveStatus, save.png: ✗ 未找到
+        GuiControl,, SaveStatus, save.png: ✗ Not found
 
     if (nextExists)
-        GuiControl,, NextStatus, next.png: ✓ 已存在
+        GuiControl,, NextStatus, next.png: ✓ Exists
     else
-        GuiControl,, NextStatus, next.png: ✗ 未找到
+        GuiControl,, NextStatus, next.png: ✗ Not found
 
     if (saveExists && nextExists)
     {
-        MsgBox, 64, 检查完成, 两个图像文件都已准备好！`n`n您现在可以运行FLIR_AutoSave.ahk了。
+        MsgBox, 64, Check Complete, Both image files are ready!`n`nYou can now run FLIR_AutoSave.ahk
     }
     else if (!saveExists && !nextExists)
     {
-        MsgBox, 48, 检查完成, 两个图像文件都不存在。`n`n请使用Windows截图工具（Win+Shift+S）截取按钮图像。
+        MsgBox, 48, Check Complete, Both image files do not exist.`n`nPlease use Windows Snipping Tool (Win+Shift+S) to capture button images.
     }
     else
     {
         missing := !saveExists ? "save.png" : "next.png"
-        MsgBox, 48, 检查完成, 还缺少: %missing%`n`n请继续截取缺少的图像。
+        MsgBox, 48, Check Complete, Still missing: %missing%`n`nPlease continue to capture the missing image.
     }
 
     return
 }
 
 ; ========================================
-; 显示详细帮助
+; Show Detailed Help
 ; ========================================
 
 ShowHelp:
 {
-    MsgBox, 64, 详细使用说明,
+    MsgBox, 64, Detailed Instructions,
     (
     ========================================
-    图像截取详细步骤
+    Image Capture Detailed Steps
     ========================================
 
-    目标：截取两个按钮的图像用于图像识别
+    Goal: Capture two button images for image recognition
 
-    1. Save按钮（save.png）
+    1. Save Button (save.png)
     ----------------------------------------
-    位置：Profile窗口右上角的Save按钮
-    要求：清晰截取按钮区域，包含完整的按钮
+    Location: Save button in upper right corner of Profile window
+    Requirement: Clearly capture button area, include complete button
 
-    截取方法：
-    a) 打开FLIR软件和Profile窗口
-    b) 按 Win+Shift+S（Windows 10/11截图工具）
-    c) 选择矩形截图模式
-    d) 精确框选Save按钮
-    e) 打开画图（Win+R输入mspaint回车）
-    f) 按Ctrl+V粘贴截图
-    g) 文件 → 另存为 → PNG图片
-    h) 文件名输入: save.png
-    i) 保存位置：与脚本同一文件夹
+    Capture Method:
+    a) Open FLIR software and Profile window
+    b) Press Win+Shift+S (Windows 10/11 Snipping Tool)
+    c) Select rectangular snip mode
+    d) Precisely select Save button
+    e) Open Paint (Win+R, type mspaint, press Enter)
+    f) Press Ctrl+V to paste screenshot
+    g) File → Save As → PNG Picture
+    h) Filename: save.png
+    i) Save location: Same folder as script
 
-    2. 下一帧箭头（next.png）
+    2. Next Frame Arrow (next.png)
     ----------------------------------------
-    位置：底部时间轴的向右箭头按钮
-    要求：清晰截取箭头按钮，包含完整图标
+    Location: Right arrow button in bottom timeline
+    Requirement: Clearly capture arrow button, include complete icon
 
-    截取方法：同上，保存文件名为 next.png
+    Capture Method: Same as above, save filename as next.png
 
-    截图技巧：
+    Capture Tips:
     ----------------------------------------
-    - 截图时确保按钮处于正常状态（非高亮/按下）
-    - 尽量精确框选，减少背景干扰
-    - 图像不要太大也不要太小（建议30-80像素）
-    - 确保图像清晰，不要模糊
+    - Ensure button is in normal state when capturing (not highlighted/pressed)
+    - Try to select precisely, reduce background interference
+    - Image should not be too large or too small (recommended 30-80 pixels)
+    - Ensure image is clear, not blurry
 
-    验证：
+    Verification:
     ----------------------------------------
-    截取完成后，点击"检查图像文件"按钮验证
-    两个文件都存在后即可使用FLIR_AutoSave.ahk
+    After capturing, click "Check Image Files" button to verify
+    When both files exist, you can use FLIR_AutoSave.ahk
     )
     return
 }
 
 ; ========================================
-; 关闭程序
+; Close Program
 ; ========================================
 
 GuiClose:
@@ -228,5 +228,5 @@ GuiEscape:
     ExitApp
 }
 
-; ESC键退出
+; ESC key to exit
 Esc::ExitApp

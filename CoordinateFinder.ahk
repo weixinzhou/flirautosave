@@ -1,193 +1,196 @@
 ; ========================================
-; 坐标获取工具 - FLIR AutoSave辅助工具
+; Coordinate Finder Tool - FLIR AutoSave Helper
 ; ========================================
-; 功能：帮助获取屏幕上各个控件的精确坐标
-; 使用方法：
-;   1. 运行此脚本
-;   2. 将鼠标移动到需要点击的位置
-;   3. 按Ctrl+Shift+C复制当前鼠标坐标
-;   4. 按F1查看所有已保存的坐标
-;   5. 按F2清除已保存的坐标
+; Function: Help obtain precise coordinates of screen controls
+; Usage:
+;   1. Run this script
+;   2. Move mouse to the position you need to click
+;   3. Press Ctrl+Shift+C to save current mouse coordinates
+;   4. Press F1 to view all saved coordinates
+;   5. Press F2 to clear saved coordinates
+; Note: This tool is for v1.x compatibility. v2.0 uses image recognition instead.
 ; ========================================
 
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %A_ScriptDir%
 
-; 全局变量
+; Global variables
 CoordList := []
 CoordCount := 0
 
-; 创建GUI显示当前坐标
+; Create GUI to display current coordinates
 Gui, +AlwaysOnTop +ToolWindow
 Gui, Font, s10, Consolas
-Gui, Add, Text, x10 y10 w400, 坐标获取工具 - 实时显示鼠标位置
+Gui, Add, Text, x10 y10 w400, Coordinate Finder Tool - Real-time Mouse Position
 Gui, Add, Text, x10 y35 w400 vCoordText, X: 0, Y: 0
-Gui, Add, Text, x10 y60 w400, 快捷键：Ctrl+Shift+C 保存坐标 | F1 查看已保存 | F2 清除
-Gui, Show, w420 h90, FLIR坐标获取工具
+Gui, Add, Text, x10 y60 w400, Hotkeys: Ctrl+Shift+C Save Coord | F1 View Saved | F2 Clear
+Gui, Show, w420 h90, FLIR Coordinate Finder
 
-; 设置定时器实时更新坐标
+; Set timer to update coordinates in real-time
 SetTimer, UpdateCoords, 50
 return
 
-; 更新坐标显示
+; Update coordinate display
 UpdateCoords:
     MouseGetPos, xpos, ypos
     GuiControl,, CoordText, X: %xpos%, Y: %ypos%
     return
 
 ; ========================================
-; 快捷键定义
+; Hotkey Definitions
 ; ========================================
 
-; Ctrl+Shift+C - 保存当前坐标
+; Ctrl+Shift+C - Save current coordinates
 ^+c::
 {
     MouseGetPos, xpos, ypos
     CoordCount++
 
-    ; 询问坐标名称
-    InputBox, CoordName, 坐标名称, 请输入此坐标的名称（例如：帧输入框、Save按钮等）:, , 400, 150
+    ; Ask for coordinate name
+    InputBox, CoordName, Coordinate Name, Enter a name for this coordinate (e.g., Frame Input, Save Button):, , 400, 150
     if ErrorLevel
         return
 
     if (CoordName = "")
-        CoordName := "坐标" . CoordCount
+        CoordName := "Coordinate" . CoordCount
 
-    ; 保存到数组
+    ; Save to array
     CoordList.Push({name: CoordName, x: xpos, y: ypos})
 
-    ; 复制到剪贴板
+    ; Copy to clipboard
     Clipboard := CoordName . "X := " . xpos . "`n" . CoordName . "Y := " . ypos
 
-    ; 显示提示
-    ToolTip, 已保存: %CoordName%`nX: %xpos%, Y: %ypos%`n(已复制到剪贴板), %xpos%, %ypos%
+    ; Show tooltip
+    ToolTip, Saved: %CoordName%`nX: %xpos%, Y: %ypos%`n(Copied to clipboard), %xpos%, %ypos%
     SetTimer, RemoveToolTip, 2000
 
-    ; 播放提示音
+    ; Play notification sound
     SoundBeep, 750, 100
 
     return
 }
 
-; F1 - 显示所有已保存的坐标
+; F1 - Display all saved coordinates
 F1::
 {
     if (CoordList.Length() = 0)
     {
-        MsgBox, 48, 坐标列表, 还没有保存任何坐标！`n`n使用 Ctrl+Shift+C 保存当前鼠标位置的坐标
+        MsgBox, 48, Coordinate List, No coordinates saved yet!`n`nUse Ctrl+Shift+C to save current mouse position coordinates
         return
     }
 
-    ; 构建坐标列表文本
-    CoordText := "已保存的坐标：`n`n"
+    ; Build coordinate list text
+    CoordText := "Saved Coordinates:`n`n"
     CoordCode := "; ========================================`n"
-    CoordCode .= "; 复制以下代码到FLIR_AutoSave.ahk中`n"
+    CoordCode .= "; Copy following code to FLIR_AutoSave.ahk`n"
     CoordCode .= "; ========================================`n`n"
 
     for index, coord in CoordList
     {
         CoordText .= index . ". " . coord.name . "`n   X: " . coord.x . ", Y: " . coord.y . "`n`n"
 
-        ; 生成代码格式
+        ; Generate code format
         varName := RegExReplace(coord.name, "\s+", "")
-        CoordCode .= varName . "X := " . coord.x . "      ; " . coord.name . " X坐标`n"
-        CoordCode .= varName . "Y := " . coord.y . "      ; " . coord.name . " Y坐标`n`n"
+        CoordCode .= varName . "X := " . coord.x . "      ; " . coord.name . " X coordinate`n"
+        CoordCode .= varName . "Y := " . coord.y . "      ; " . coord.name . " Y coordinate`n`n"
     }
 
-    ; 显示列表
-    MsgBox, 64, 已保存的坐标, %CoordText%
+    ; Display list
+    MsgBox, 64, Saved Coordinates, %CoordText%
 
-    ; 复制代码到剪贴板
+    ; Copy code to clipboard
     Clipboard := CoordCode
-    TrayTip, 坐标代码已复制, 坐标代码已复制到剪贴板，可以直接粘贴到脚本中, 3, 1
+    TrayTip, Coordinate Code Copied, Coordinate code has been copied to clipboard and can be pasted directly into script, 3, 1
 
     return
 }
 
-; F2 - 清除所有已保存的坐标
+; F2 - Clear all saved coordinates
 F2::
 {
-    MsgBox, 4, 确认清除, 确定要清除所有已保存的坐标吗？
+    MsgBox, 4, Confirm Clear, Are you sure you want to clear all saved coordinates?
     IfMsgBox Yes
     {
         CoordList := []
         CoordCount := 0
-        MsgBox, 64, 已清除, 所有坐标已清除！
+        MsgBox, 64, Cleared, All coordinates have been cleared!
     }
     return
 }
 
-; F3 - 显示帮助
+; F3 - Display help
 F3::
 {
     HelpText =
     (
     ========================================
-    FLIR坐标获取工具 - 使用说明
+    FLIR Coordinate Finder Tool - Instructions
     ========================================
 
-    用途：
-    获取FLIR ResearchIR软件界面上各个控件的屏幕坐标
+    Purpose:
+    Obtain screen coordinates of controls in FLIR ResearchIR software interface
 
-    操作步骤：
+    Operation Steps:
 
-    1. 打开FLIR ResearchIR软件
+    1. Open FLIR ResearchIR software
 
-    2. 打开Profile窗口（显示温度曲线的窗口）
+    2. Open Profile window (window showing temperature curve)
 
-    3. 运行此坐标获取工具
+    3. Run this coordinate finder tool
 
-    4. 按照以下顺序获取坐标：
-       a) 将鼠标移到Profile窗口的Save按钮
-          按 Ctrl+Shift+C，输入名称"Save按钮"
+    4. Capture coordinates in the following order:
+       a) Move mouse to Save button in Profile window
+          Press Ctrl+Shift+C, enter name "Save Button"
 
-       b) 将鼠标移到底部时间轴的"下一帧"右箭头按钮
-          按 Ctrl+Shift+C，输入名称"下一帧箭头按钮"
+       b) Move mouse to "Next Frame" right arrow button in bottom timeline
+          Press Ctrl+Shift+C, enter name "Next Frame Arrow"
 
-       c) 点击一次Save按钮打开保存对话框
+       c) Click Save button once to open save dialog
 
-       d) 将鼠标移到文件名输入框
-          按 Ctrl+Shift+C，输入名称"文件名输入框"
+       d) Move mouse to filename input box
+          Press Ctrl+Shift+C, enter name "Filename Input"
 
-       e) 将鼠标移到"Save as type"下拉框
-          按 Ctrl+Shift+C，输入名称"文件类型下拉框"
+       e) Move mouse to "Save as type" dropdown
+          Press Ctrl+Shift+C, enter name "File Type Dropdown"
 
-       f) 将鼠标移到最终的Save按钮
-          按 Ctrl+Shift+C，输入名称"最终Save按钮"
+       f) Move mouse to final Save button
+          Press Ctrl+Shift+C, enter name "Final Save Button"
 
-    5. 按 F1 查看所有坐标并复制代码
+    5. Press F1 to view all coordinates and copy code
 
-    6. 将复制的代码粘贴到FLIR_AutoSave.ahk中
+    6. Paste copied code into FLIR_AutoSave.ahk
 
-    快捷键：
-    Ctrl+Shift+C - 保存当前鼠标位置坐标
-    F1 - 查看所有已保存坐标并复制代码
-    F2 - 清除所有已保存坐标
-    F3 - 显示此帮助
-    ESC - 退出程序
+    Hotkeys:
+    Ctrl+Shift+C - Save current mouse position coordinates
+    F1 - View all saved coordinates and copy code
+    F2 - Clear all saved coordinates
+    F3 - Display this help
+    ESC - Exit program
+
+    Note: v2.0 uses image recognition instead of coordinates
     )
 
-    MsgBox, 64, 使用说明, %HelpText%
+    MsgBox, 64, Instructions, %HelpText%
     return
 }
 
-; ESC - 退出
+; ESC - Exit
 Esc::
 {
-    MsgBox, 4, 退出确认, 确定要退出坐标获取工具吗？
+    MsgBox, 4, Exit Confirmation, Are you sure you want to exit the Coordinate Finder tool?
     IfMsgBox Yes
         ExitApp
     return
 }
 
-; 移除提示
+; Remove tooltip
 RemoveToolTip:
     SetTimer, RemoveToolTip, Off
     ToolTip
     return
 
-; 关闭GUI时退出
+; Close GUI and exit
 GuiClose:
     ExitApp
     return
