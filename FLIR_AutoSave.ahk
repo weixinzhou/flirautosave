@@ -74,33 +74,20 @@ FindAndClick(ImageFile, ErrorMsg := "") {
         ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, %ImageFile%
 
     if (ErrorLevel = 0) {
-        ; Image found successfully
-        MsgBox, 64, Image Found!, Image: %ImageFile%`n`nFound at coordinates:`nX: %FoundX%`nY: %FoundY%`n`nScreen resolution: %A_ScreenWidth% x %A_ScreenHeight%`n`nWill now click this position...
-
+        ; Image found successfully - auto click without confirmation
         if (DebugMode) {
             ToolTip, Found %ImageFile% at X:%FoundX% Y:%FoundY%, %FoundX%, %FoundY%
-            Sleep, 2000
+            Sleep, 1000
             ToolTip  ; Clear tooltip
         }
 
-        ; Move mouse to position first (visible movement)
-        MouseMove, %FoundX%, %FoundY%, 10
+        ; Move mouse to position and click
+        MouseMove, %FoundX%, %FoundY%, 5
+        Sleep, 50
+        Click, %FoundX%, %FoundY%
         Sleep, 100
 
-        ; Show confirmation before clicking
-        MsgBox, 4, Confirm Click, Mouse is now at:`nX: %FoundX%`nY: %FoundY%`n`nIs the mouse at the correct button?`n`nClick Yes to proceed with click, No to skip.
-
-        IfMsgBox Yes
-        {
-            Click, %FoundX%, %FoundY%
-            MsgBox, 64, Click Complete, Clicked at X:%FoundX% Y:%FoundY%
-            return true
-        }
-        else
-        {
-            MsgBox, 48, Click Skipped, Click was skipped by user.
-            return false
-        }
+        return true
     } else {
         ; Image not found
         if (ErrorMsg != "") {
@@ -187,9 +174,7 @@ Loop, %TotalFrames%
 
     ; ======= Step 1: Use image recognition to find and click Save button =======
     if (!FindAndClick(SaveButtonImage, "Cannot find Save button!")) {
-        MsgBox, 4, Continue?, Save button recognition failed for Frame %CurrentFrame%. Continue?
-        IfMsgBox No
-            ExitApp
+        ; Auto skip this frame if button not found
         continue
     }
     Sleep, %DelayMedium%
@@ -237,11 +222,8 @@ Loop, %TotalFrames%
     ; Only switch to next frame if not the last frame
     if (A_Index < TotalFrames)
     {
-        if (!FindAndClick(NextFrameImage, "Cannot find next frame button!")) {
-            MsgBox, 4, Continue?, Next frame button recognition failed after Frame %CurrentFrame%. Continue?
-            IfMsgBox No
-                ExitApp
-        }
+        ; Try to click next frame button, continue even if failed
+        FindAndClick(NextFrameImage, "Cannot find next frame button!")
         Sleep, %DelayMedium%
     }
 }
