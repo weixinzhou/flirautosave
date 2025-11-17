@@ -60,6 +60,13 @@ FindAndClick(ImageFile, ErrorMsg := "") {
     CoordMode, Pixel, Screen
     CoordMode, Mouse, Screen
 
+    ; Check if image file exists first
+    IfNotExist, %ImageFile%
+    {
+        MsgBox, 16, Image File Not Found, Image file does not exist: %ImageFile%`n`nCurrent directory: %A_ScriptDir%`n`nPlease ensure the image file is in the same directory as the script.
+        return false
+    }
+
     ; Set image recognition tolerance
     if (ImageTolerance > 0)
         ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, *%ImageTolerance% %ImageFile%
@@ -67,21 +74,37 @@ FindAndClick(ImageFile, ErrorMsg := "") {
         ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, %ImageFile%
 
     if (ErrorLevel = 0) {
-        ; Image found, click center position using screen coordinates
+        ; Image found successfully
+        MsgBox, 64, Image Found!, Image: %ImageFile%`n`nFound at coordinates:`nX: %FoundX%`nY: %FoundY%`n`nScreen resolution: %A_ScreenWidth% x %A_ScreenHeight%`n`nWill now click this position...
+
         if (DebugMode) {
             ToolTip, Found %ImageFile% at X:%FoundX% Y:%FoundY%, %FoundX%, %FoundY%
-            Sleep, 1000
+            Sleep, 2000
             ToolTip  ; Clear tooltip
         }
 
-        Click, %FoundX%, %FoundY%, 0  ; Move mouse without clicking first
-        Sleep, 50
-        Click, %FoundX%, %FoundY%     ; Then click
-        return true
+        ; Move mouse to position first (visible movement)
+        MouseMove, %FoundX%, %FoundY%, 10
+        Sleep, 100
+
+        ; Show confirmation before clicking
+        MsgBox, 4, Confirm Click, Mouse is now at:`nX: %FoundX%`nY: %FoundY%`n`nIs the mouse at the correct button?`n`nClick Yes to proceed with click, No to skip.
+
+        IfMsgBox Yes
+        {
+            Click, %FoundX%, %FoundY%
+            MsgBox, 64, Click Complete, Clicked at X:%FoundX% Y:%FoundY%
+            return true
+        }
+        else
+        {
+            MsgBox, 48, Click Skipped, Click was skipped by user.
+            return false
+        }
     } else {
         ; Image not found
         if (ErrorMsg != "") {
-            MsgBox, 48, Image Recognition Failed, %ErrorMsg%`n`nPlease ensure:`n1. %ImageFile% file exists in script directory`n2. Button is visible on screen (not minimized/hidden)`n3. Image is clear and matches current display`n4. Try increasing ImageTolerance value`n`nSearching full screen: 0,0 to %A_ScreenWidth%,%A_ScreenHeight%
+            MsgBox, 48, Image Recognition Failed, %ErrorMsg%`n`nImage file: %ImageFile%`nFile exists: Yes (verified)`n`nScreen resolution: %A_ScreenWidth% x %A_ScreenHeight%`nSearch area: 0,0 to %A_ScreenWidth%,%A_ScreenHeight%`nTolerance: %ImageTolerance%`n`nPossible reasons:`n1. Button is not visible on screen`n2. Button appearance has changed`n3. Display scaling may be different`n4. Need to increase ImageTolerance`n`nTry:`n- Set ImageTolerance := 100 (or higher)`n- Re-capture the image at current display size`n- Ensure button is fully visible
         }
         return false
     }

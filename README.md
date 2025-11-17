@@ -25,7 +25,8 @@ This is an AutoHotkey script tool for automating batch export of frame data from
 ## File Description
 
 - `FLIR_AutoSave.ahk` - Main script, executes batch export task (v2.0 uses image recognition)
-- `ImageCapture.ahk` - Image capture helper tool (newly added)
+- `TestImageSearch.ahk` - Test tool to verify image recognition (NEW - for troubleshooting)
+- `ImageCapture.ahk` - Image capture helper tool
 - `CoordinateFinder.ahk` - Coordinate acquisition tool (used by v1.x, not needed for v2.0)
 - `save.png` - Save button screenshot (user needs to capture)
 - `next.png` - Next frame arrow button screenshot (user needs to capture)
@@ -107,6 +108,33 @@ Use Windows Snipping Tool to capture two button images:
 
 5. Save script (Ctrl+S)
 
+### Step 2.5: Test Image Recognition (IMPORTANT - Recommended!)
+
+Before running the main script, test if image recognition works:
+
+1. **Run TestImageSearch.ahk**:
+   - Double-click `TestImageSearch.ahk`
+   - Follow the on-screen instructions
+
+2. **The test will**:
+   - Try to find save.png on screen
+   - Move mouse to show where it was found
+   - Show exact coordinates
+   - Try to find next.png on screen
+   - Report success or failure with detailed info
+
+3. **If images are NOT found**:
+   - The test will show detailed error message
+   - Try increasing tolerance (it will offer to test with tolerance 100)
+   - If found with higher tolerance, update `ImageTolerance` in main script
+   - If still not found, re-capture the images
+
+4. **If images ARE found but at wrong location**:
+   - Re-capture the images more precisely
+   - Ensure you capture only the button itself
+
+**This test step can save you a lot of time troubleshooting!**
+
 ### Step 3: Run Batch Export
 
 1. Ensure FLIR ResearchIR software is open
@@ -160,16 +188,42 @@ The script automatically repeats the following steps:
 ## FAQ
 
 ### 1. Image recognition failed, cannot find button?
-- **Check image files**: Ensure save.png and next.png files exist in script directory
-- **Enable debug mode**: Set `DebugMode := true` in script to see if images are found
-- **Increase tolerance**: Set `ImageTolerance := 100` (or even higher, up to 255) for more lenient matching
-- **Re-capture images**: Use clearer, more precise screenshots
-  - Capture when button is in normal state (not highlighted or pressed)
-  - Capture at actual size (don't resize)
-  - Save as PNG format (not JPG)
-- **Check window visibility**: Ensure button is fully visible, not blocked by other windows
-- **Check display scaling**: If using Windows display scaling (125%, 150%), try capturing images at that scale
-- **Try larger capture**: Capture a slightly larger area including some background around the button
+
+**FIRST: Run TestImageSearch.ahk to diagnose the problem!**
+
+The test script will tell you exactly what's wrong:
+- If file doesn't exist
+- If image can't be found on screen
+- If found at wrong location
+- What tolerance value works
+
+**Step-by-step troubleshooting:**
+
+1. **Run TestImageSearch.ahk**
+   - This shows exactly where (or if) images are found
+   - Follow the on-screen diagnostic messages
+
+2. **If test shows "File Not Found"**:
+   - Verify save.png and next.png are in same folder as scripts
+   - Check file names are exactly "save.png" and "next.png" (lowercase)
+
+3. **If test shows "Image NOT Found"**:
+   - Test will offer to try with tolerance 100
+   - If found with higher tolerance, update `ImageTolerance` in main script
+   - If still not found, re-capture the images:
+     - Capture when button is in normal state (not highlighted)
+     - Save as PNG format (not JPG)
+     - Don't resize after capturing
+
+4. **If test finds image but at wrong location**:
+   - Re-capture more precisely
+   - Include only the button in the capture
+   - Make sure button appearance matches what's on screen
+
+5. **For 1920x1080 resolution specifically**:
+   - Ensure no Windows display scaling (should be 100%)
+   - If using scaling, capture images at that scaled size
+   - Test script will show your actual screen resolution
 
 ### 2. Save dialog keyboard shortcuts not working?
 - **Verify shortcuts**: Different Windows or FLIR software versions may have different shortcuts
